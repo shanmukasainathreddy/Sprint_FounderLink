@@ -1,0 +1,29 @@
+//static varibale
+static int a = 20;
+
+//static block
+static{
+    System.out.println("raga");
+}
+
+//static method
+static add(){
+    // dsnkv
+}
+
+
+class Shannu{
+    int a = 20;
+    //no para
+    Shannu(){
+
+    }
+
+    Shannu(int a){
+        this.a = a;
+    }
+}
+
+public static void main(String[] args){
+
+}
