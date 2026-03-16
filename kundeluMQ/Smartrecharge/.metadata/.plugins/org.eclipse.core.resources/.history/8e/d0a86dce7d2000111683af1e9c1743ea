@@ -1,0 +1,5 @@
+package com.prac.processing_service.model;
+
+public class Recharge {
+
+}

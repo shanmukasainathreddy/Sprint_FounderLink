@@ -1,0 +1,5 @@
+package com.prac.processing_service.consumer;
+
+public class RechargeConsumer {
+
+}
