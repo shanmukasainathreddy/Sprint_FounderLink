@@ -1,0 +1,282 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: founderlink-postgres
+    environment:
+      POSTGRES_DB: school
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d school"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:alpine
+    container_name: founderlink-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: founderlink-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 240s
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: founderlink-config-server
+    environment:
+      SERVER_PORT: 8888
+      CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: classpath:/config
+    ports:
+      - "8888:8888"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+    container_name: founderlink-eureka-server
+    environment:
+      SERVER_PORT: 8761
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: founderlink-auth-service
+    environment:
+      SERVER_PORT: 8081
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: founderlink-user-service
+    environment:
+      SERVER_PORT: 8082
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+
+  startup-service:
+    build:
+      context: ./startup-service
+    container_name: founderlink-startup-service
+    environment:
+      SERVER_PORT: 8083
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+
+  investment-service:
+    build:
+      context: ./investment-service
+    container_name: founderlink-investment-service
+    environment:
+      SERVER_PORT: 8084
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+
+  team-service:
+    build:
+      context: ./team-service
+    container_name: founderlink-team-service
+    environment:
+      SERVER_PORT: 8085
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+
+  messaging-service:
+    build:
+      context: ./messaging-service
+    container_name: founderlink-messaging-service
+    environment:
+      SERVER_PORT: 8086
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  notification-service:
+    build:
+      context: ./notification-service
+    container_name: founderlink-notification-service
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8087
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    ports:
+      - "8087:8087"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: founderlink-api-gateway
+    environment:
+      SERVER_PORT: 8080
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
+      SERVICES_AUTH_URL: http://auth-service:8081
+      SERVICES_USER_URL: http://user-service:8082
+      SERVICES_STARTUP_URL: http://startup-service:8083
+      SERVICES_INVESTMENT_URL: http://investment-service:8084
+      SERVICES_TEAM_URL: http://team-service:8085
+      SERVICES_MESSAGING_URL: http://messaging-service:8086
+      SERVICES_NOTIFICATION_URL: http://notification-service:8087
+    ports:
+      - "8080:8080"
+    depends_on:
+      auth-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+      startup-service:
+        condition: service_started
+      investment-service:
+        condition: service_started
+      team-service:
+        condition: service_started
+      messaging-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  rabbitmq_data:

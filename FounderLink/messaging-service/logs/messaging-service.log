@@ -1,0 +1,13 @@
+2026-03-30T14:08:15.342+05:30  INFO [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] c.p.m.c.MessagingControllerTest          : Starting MessagingControllerTest using Java 17.0.18 with PID 25348 (started by Sainath Reddy in C:\Users\Sainath Reddy\Downloads\WORK\LPU Academics\training_capgemini\FounderLink\messaging-service)
+2026-03-30T14:08:15.360+05:30  INFO [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] c.p.m.c.MessagingControllerTest          : No active profile set, falling back to 1 default profile: "default"
+2026-03-30T14:08:22.831+05:30  WARN [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 38cbbda0-e0a2-4b8e-b7a0-d611e8b59434
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-03-30T14:08:22.919+05:30  INFO [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-03-30T14:08:23.316+05:30  INFO [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-03-30T14:08:23.317+05:30  INFO [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-03-30T14:08:23.322+05:30  INFO [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 4 ms
+2026-03-30T14:08:23.549+05:30  INFO [messaging-service,,] 25348 --- [messaging-service] [main] [                                                 ] c.p.m.c.MessagingControllerTest          : Started MessagingControllerTest in 10.498 seconds (process running for 13.429)
