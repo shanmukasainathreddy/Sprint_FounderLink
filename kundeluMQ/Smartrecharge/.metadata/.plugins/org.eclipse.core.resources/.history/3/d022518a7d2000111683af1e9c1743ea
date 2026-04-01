@@ -1,5 +1,0 @@
-package com.prac.processing_service.config;
-
-public class RabbitMQConfig {
-
-}
