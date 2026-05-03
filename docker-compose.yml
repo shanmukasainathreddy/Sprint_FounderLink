@@ -274,8 +274,6 @@ services:
       context: ./notification-service
     container_name: founderlink-notification-service
     restart: on-failure
-    env_file:
-      - .env
     environment:
       SERVER_PORT: 8087
       EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka
