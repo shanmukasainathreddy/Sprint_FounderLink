@@ -84,6 +84,8 @@
                 "input": "public"
               }
             ],
+            "karmaConfig": "karma.conf.js",
+            "codeCoverage": true,
             "styles": [
               "src/styles.css"
             ]

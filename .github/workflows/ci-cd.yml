@@ -104,7 +104,15 @@ jobs:
           CONFIG_SERVER_URL: http://localhost:8888
           EUREKA_DEFAULT_ZONE: http://localhost:8761/eureka
           ZIPKIN_ENDPOINT: http://localhost:9411/api/v2/spans
-        run: mvn -B test
+        run: mvn -B verify
+
+      - name: Upload JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-${{ matrix.service }}
+          path: ${{ matrix.service }}/target/site/jacoco/jacoco.xml
+          if-no-files-found: ignore
 
   frontend-build:
     name: Frontend build
@@ -127,8 +135,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Test Angular app with coverage
+        run: npm run test:ci
+
       - name: Build Angular app
         run: npm run build
+
+      - name: Upload frontend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-lcov
+          path: sprint frontend/founderlink/coverage/founderlink/lcov.info
+          if-no-files-found: ignore
 
   docker-build:
     name: Docker Compose build

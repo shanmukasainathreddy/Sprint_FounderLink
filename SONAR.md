@@ -1,17 +1,16 @@
 # SonarQube setup
 
-This project now includes a root `sonar-project.properties` file so you can scan all services from the repository root.
-The Docker Compose setup now also starts SonarQube automatically.
+This project includes a root `sonar-project.properties` file so you can scan all backend services and the Angular frontend from the repository root.
+Coverage is reported from JaCoCo XML files for Java and LCOV for Angular.
 
 ## 0. Start Docker services
 
 Run this from the project root:
 
 ```bat
-docker compose up -d
+docker compose --profile sonar up -d sonarqube-db sonarqube
 ```
 
-This now starts your application stack and SonarQube together.
 SonarQube will be available at:
 
 ```text
@@ -27,7 +26,7 @@ password: admin
 
 On first login, SonarQube will ask you to change the password and create a token.
 
-## 1. Build the Java classes first
+## 1. Build tests and coverage first
 
 Run this command from the project root:
 
@@ -35,22 +34,33 @@ Run this command from the project root:
 build-all-for-sonar.bat
 ```
 
-It runs the same Maven wrappers for every service. If you prefer the expanded commands, they are:
+It runs Maven `clean verify` for every backend service, then runs Angular tests with coverage and builds the frontend.
+If you prefer the expanded backend commands, they are:
 
 ```bat
-call api-gateway\mvnw.cmd -f api-gateway\pom.xml clean verify
-call auth-service\mvnw.cmd -f auth-service\pom.xml clean verify
-call config-server\mvnw.cmd -f config-server\pom.xml clean verify
-call eureka-server\mvnw.cmd -f eureka-server\pom.xml clean verify
-call investment-service\mvnw.cmd -f investment-service\pom.xml clean verify
-call messaging-service\mvnw.cmd -f messaging-service\pom.xml clean verify
-call notification-service\mvnw.cmd -f notification-service\pom.xml clean verify
-call startup-service\mvnw.cmd -f startup-service\pom.xml clean verify
-call team-service\mvnw.cmd -f team-service\pom.xml clean verify
-call user-service\mvnw.cmd -f user-service\pom.xml clean verify
+call mvn -f api-gateway\pom.xml clean verify
+call mvn -f auth-service\pom.xml clean verify
+call mvn -f config-server\pom.xml clean verify
+call mvn -f eureka-server\pom.xml clean verify
+call mvn -f investment-service\pom.xml clean verify
+call mvn -f messaging-service\pom.xml clean verify
+call mvn -f notification-service\pom.xml clean verify
+call mvn -f startup-service\pom.xml clean verify
+call mvn -f team-service\pom.xml clean verify
+call mvn -f user-service\pom.xml clean verify
 ```
 
-You can also run only the services you want to scan, but Sonar works best when the matching `target/classes` folders already exist.
+Frontend coverage is generated with:
+
+```bat
+cd "sprint frontend\founderlink"
+npm ci
+npm run test:ci
+npm run build
+cd ..\..
+```
+
+You can run only the services you want to scan, but Sonar works best when all matching `target/classes`, JaCoCo XML, and LCOV files already exist.
 
 ## 2. Run SonarQube scan
 
@@ -66,6 +76,14 @@ Or use the helper script added to this repo:
 run-sonar.bat http://localhost:9000 YOUR_SONAR_TOKEN FounderLink
 ```
 
+If you do not want to install `sonar-scanner`, use Docker for the scanner too:
+
+```bat
+run-sonar-docker.bat http://host.docker.internal:9000 YOUR_SONAR_TOKEN FounderLink
+```
+
+Use `host.docker.internal` when the scanner runs inside Docker and SonarQube is running on your Windows host through Docker Desktop.
+
 If your SonarQube project key is different, override it:
 
 ```bat
@@ -76,10 +94,40 @@ sonar-scanner -Dsonar.projectKey=your-project-key -Dsonar.host.url=http://localh
 
 SonarLint is an IDE plugin, not a repo dependency. Install the SonarLint extension in your editor and open this folder. If you connect SonarLint to your SonarQube server, it will reuse the same project rules.
 
+## 4. Set an 80% quality gate
+
+In SonarQube, open:
+
+```text
+Quality Gates -> Create
+```
+
+Recommended conditions:
+
+```text
+Coverage on New Code >= 80%
+Duplicated Lines on New Code <= 3%
+Reliability Rating on New Code = A
+Security Rating on New Code = A
+Maintainability Rating on New Code = A
+```
+
+Then assign the gate to the `FounderLink` project. The repository can generate the reports, but SonarQube decides whether the project passes the 80% gate.
+
+GitHub Actions also runs Maven `verify` and Angular `test:ci`, then uploads the JaCoCo and LCOV reports as artifacts. A red cross in GitHub means at least one build, test, coverage, or Docker Compose step failed.
+
 ## Quick flow
 
 ```bat
-docker compose up -d
+docker compose --profile sonar up -d sonarqube-db sonarqube
 build-all-for-sonar.bat
 run-sonar.bat http://localhost:9000 YOUR_SONAR_TOKEN FounderLink
+```
+
+Docker-only scanner flow:
+
+```bat
+docker compose --profile sonar up -d sonarqube-db sonarqube
+build-all-for-sonar.bat
+run-sonar-docker.bat http://host.docker.internal:9000 YOUR_SONAR_TOKEN FounderLink
 ```
