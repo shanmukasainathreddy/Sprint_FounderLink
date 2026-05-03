@@ -1,0 +1,30 @@
+/.metadata/
+/.scannerwork/
+
+# Local secrets and environment
+.env
+*.env
+
+# Build output
+target/
+dist/
+build/
+.m2/
+.m2repo/
+node_modules/
+
+# Duplicate/local nested project copy
+/FounderLink/
+
+# Runtime logs
+logs/
+*.log
+*.log.*
+
+# IDE and OS files
+.idea/
+.vscode/
+.metadata/
+.scannerwork/
+.DS_Store
+Thumbs.db

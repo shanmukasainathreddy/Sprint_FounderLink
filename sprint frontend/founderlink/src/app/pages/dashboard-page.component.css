@@ -1,0 +1,161 @@
+.workspace {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+}
+
+.workspace-bar,
+.panel,
+.stat-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  background: rgba(17, 18, 24, 0.86);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+}
+
+.workspace-bar {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.workspace-bar h1,
+.panel h2,
+.panel h3 {
+  margin: 6px 0;
+}
+
+.workspace-bar p,
+.panel p,
+.notification-item p {
+  color: rgba(239, 240, 247, 0.72);
+}
+
+.eyebrow,
+.service-label,
+.stat-card span {
+  margin: 0;
+  color: #8f7bff;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.bar-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stats-grid,
+.dashboard-grid,
+.services-grid,
+.architecture-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.stats-grid {
+  margin: 20px 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stat-card,
+.panel {
+  padding: 22px;
+}
+
+.stat-card strong {
+  display: block;
+  margin: 10px 0 6px;
+  font-size: 1.9rem;
+}
+
+.stat-card small,
+code,
+.notification-item small {
+  color: rgba(239, 240, 247, 0.56);
+}
+
+.dashboard-grid {
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.8fr);
+}
+
+.main-column,
+.side-column,
+.notification-list {
+  display: grid;
+  gap: 18px;
+}
+
+.services-grid,
+.architecture-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.service-card,
+.architecture-grid article,
+.notification-item {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.service-card h3 {
+  text-transform: capitalize;
+}
+
+.service-card button {
+  margin-top: 12px;
+}
+
+.panel-heading {
+  margin-bottom: 18px;
+}
+
+code {
+  display: block;
+  word-break: break-all;
+}
+
+.notification-item.unread {
+  border-color: rgba(143, 123, 255, 0.35);
+  background: rgba(111, 79, 255, 0.08);
+}
+
+.primary,
+.ghost {
+  border: 0;
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary {
+  background: linear-gradient(135deg, #6f4fff, #5440ff);
+  color: #fff;
+}
+
+.ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f3f4f8;
+}
+
+@media (max-width: 1080px) {
+  .stats-grid,
+  .dashboard-grid,
+  .services-grid,
+  .architecture-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

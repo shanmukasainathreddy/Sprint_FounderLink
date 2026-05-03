@@ -1,0 +1,308 @@
+<div class="auth-shell">
+  <header class="hero">
+    <div class="hero-copy">
+      <div class="brand-mark">
+        <span class="brand-icon">FL</span>
+        <span>FounderLink</span>
+      </div>
+      <h1>Connect. Build. Fund your vision.</h1>
+      <p class="hero-text">
+        Where startup founders meet investors and co-founders ready to build the next big thing.
+      </p>
+      <div class="feature-stack">
+        <article class="feature-row">
+          <span class="check-pill">+</span>
+          <div>
+            <strong>Discover vetted startups</strong>
+            <p>High-signal marketplace for funding-ready and traction-stage teams.</p>
+          </div>
+        </article>
+        <article class="feature-row">
+          <span class="check-pill">+</span>
+          <div>
+            <strong>Direct founder communication</strong>
+            <p>Start conversations instantly with investors and co-founders.</p>
+          </div>
+        </article>
+        <article class="feature-row">
+          <span class="check-pill">+</span>
+          <div>
+            <strong>Track funding and momentum</strong>
+            <p>Follow investments, team invites, approvals, and startup progress.</p>
+          </div>
+        </article>
+      </div>
+      <div class="hero-metrics">
+        <article class="metric-card">
+          <span>Total funded</span>
+          <strong>{{ store.authStats().totalRaised | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+        </article>
+        <article class="metric-card">
+          <span>Founders</span>
+          <strong>{{ store.authStats().founders }}</strong>
+        </article>
+        <article class="metric-card">
+          <span>Investors</span>
+          <strong>{{ store.authStats().investors }}</strong>
+        </article>
+      </div>
+    </div>
+
+    <aside class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-mark">
+          <span class="brand-icon small">FL</span>
+          <span>FounderLink</span>
+        </div>
+        <p>{{ store.authMode() === 'login' ? 'Welcome back' : 'Create your account' }}</p>
+      </div>
+
+      @if (store.authMode() === 'login') {
+        <div class="auth-tabs auth-tabs--solid">
+          <button [class.active]="store.authMode() === 'login'" (click)="store.setAuthMode('login')">Sign in</button>
+          <button [class.active]="store.authMode() === 'register'" (click)="store.setAuthMode('register')">Register</button>
+        </div>
+        <div class="auth-form">
+          @if (store.backendMessage()) {
+            <p class="login-hint" title="{{ store.backendMessage() }}">{{ store.backendMessage() }}</p>
+          }
+          <label>
+            <span>Email address</span>
+            <input
+              type="email"
+              [ngModel]="store.loginForm().email"
+              (ngModelChange)="store.updateLoginField('email', $event)"
+              placeholder="you@example.com"
+            />
+          </label>
+          <label>
+            <span>Password</span>
+            <div class="password-field">
+              <input
+                [type]="store.showLoginPassword() ? 'text' : 'password'"
+                [ngModel]="store.loginForm().password"
+                (ngModelChange)="store.updateLoginField('password', $event)"
+                placeholder="********"
+              />
+              <button type="button" (click)="store.showLoginPassword.set(!store.showLoginPassword())">
+                {{ store.showLoginPassword() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </label>
+          <button class="forgot-link" type="button" (click)="store.openForgotPassword()">Forgot password?</button>
+          <label class="checkbox-row">
+            <input
+              type="checkbox"
+              [checked]="store.rememberMe()"
+              (change)="store.rememberMe.set(!store.rememberMe())"
+            />
+            <span>Remember me for 7 days</span>
+          </label>
+          <button class="primary auth-cta" [disabled]="store.busy()" (click)="login()">Sign in to FounderLink</button>
+        </div>
+      } @else {
+        <div class="register-steps">
+          @if (store.backendMessage() && !store.pendingVerificationEmail()) {
+            <p class="empty-state">{{ store.backendMessage() }}</p>
+          }
+          @for (step of store.registerSteps; track step; let i = $index) {
+            <button
+              class="step-chip"
+              [class.active]="store.registerStep() === i + 1"
+              (click)="store.setRegisterStep(i + 1 === 1 ? 1 : i + 1 === 2 ? 2 : 3)"
+            >
+              <span>{{ i + 1 }}</span>
+              <strong>{{ step }}</strong>
+            </button>
+          }
+        </div>
+
+        @if (store.registerStep() === 1) {
+          <div class="register-header">
+            <h3>Create your account</h3>
+            <p>Select how you'll use FounderLink. This sets up your personalized experience.</p>
+          </div>
+          <div class="role-grid">
+            @for (item of store.onboardingRoles; track item.role) {
+              <button
+                class="role-card"
+                [class.selected]="store.registerForm().role === item.role"
+                [class.disabled]="item.disabled"
+                (click)="store.selectRegisterRole(item.role)"
+              >
+                <span class="role-icon">{{ item.icon }}</span>
+                <strong>{{ item.title }}</strong>
+                <p>{{ item.description }}</p>
+                @if (store.registerForm().role === item.role && !item.disabled) {
+                  <small>Selected</small>
+                }
+              </button>
+            }
+          </div>
+          <button class="primary auth-cta" [disabled]="!store.canContinueRegister()" (click)="store.nextRegisterStep()">
+            {{ store.onboardingRoles[store.roles.indexOf(store.registerForm().role)].action }}
+          </button>
+          <button class="inline-link" (click)="store.setAuthMode('login')">Already have an account? Sign in</button>
+        } @else if (store.registerStep() === 2) {
+          <div class="auth-form auth-form--grid">
+            <label>
+              <span>Full name</span>
+              <input [ngModel]="store.registerForm().name" (ngModelChange)="store.updateRegisterField('name', $event)" />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" [ngModel]="store.registerForm().email" (ngModelChange)="store.updateRegisterField('email', $event)" />
+            </label>
+            <label>
+              <span>Password</span>
+              <input type="password" [ngModel]="store.registerForm().password" (ngModelChange)="store.updateRegisterField('password', $event)" />
+            </label>
+            <label>
+              <span>Location</span>
+              <input [ngModel]="store.registerForm().location" (ngModelChange)="store.updateRegisterField('location', $event)" />
+            </label>
+          </div>
+          <div class="action-row">
+            <button class="ghost" (click)="store.previousRegisterStep()">Back</button>
+            <button class="primary" [disabled]="!store.canContinueRegister()" (click)="store.nextRegisterStep()">Continue</button>
+          </div>
+        } @else {
+          <div class="auth-form auth-form--grid">
+            <label class="field-wide">
+              <span>Skills</span>
+              <input [ngModel]="store.registerForm().skills" (ngModelChange)="store.updateRegisterField('skills', $event)" />
+            </label>
+            <label>
+              <span>Experience</span>
+              <input [ngModel]="store.registerForm().experience" (ngModelChange)="store.updateRegisterField('experience', $event)" />
+            </label>
+            <label>
+              <span>Portfolio links</span>
+              <input [ngModel]="store.registerForm().portfolioLinks" (ngModelChange)="store.updateRegisterField('portfolioLinks', $event)" />
+            </label>
+            <label class="field-wide">
+              <span>Bio</span>
+              <textarea [ngModel]="store.registerForm().bio" (ngModelChange)="store.updateRegisterField('bio', $event)"></textarea>
+            </label>
+          </div>
+          <div class="action-row">
+            <button class="ghost" (click)="store.previousRegisterStep()">Back</button>
+            <button class="primary" [disabled]="!store.canContinueRegister()" (click)="register()">Create account</button>
+          </div>
+        }
+
+      }
+    </aside>
+  </header>
+
+  @if (store.pendingVerificationEmail()) {
+    <div class="modal-backdrop">
+      <section class="otp-modal">
+        <div>
+          <p class="modal-eyebrow">Email Verification</p>
+          <h2>Enter OTP</h2>
+          <p class="modal-copy">
+            We sent a 6-digit verification code to {{ store.pendingVerificationEmail() }}.
+          </p>
+        </div>
+        <div class="auth-form">
+          <label>
+            <span>OTP code</span>
+            <input
+              inputmode="numeric"
+              maxlength="6"
+              [ngModel]="store.verificationCode()"
+              (ngModelChange)="store.verificationCode.set($event)"
+              placeholder="Enter 6-digit OTP"
+            />
+          </label>
+          @if (store.backendMessage()) {
+            <p class="empty-state">{{ store.backendMessage() }}</p>
+          }
+          <div class="action-row">
+            <button class="primary" [disabled]="store.busy()" (click)="verifyOtp()">Verify OTP</button>
+            <button class="ghost" [disabled]="store.busy()" (click)="resendOtp()">Resend OTP</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (store.forgotPasswordStep()) {
+    <div class="modal-backdrop">
+      <section class="otp-modal reset-modal">
+        <div class="modal-header-row">
+          <div>
+            <p class="modal-eyebrow">Account Recovery</p>
+            <h2>{{ store.forgotPasswordStep() === 1 ? 'Verify OTP' : 'Create new password' }}</h2>
+            <p class="modal-copy">
+              {{
+                store.forgotPasswordStep() === 1
+                  ? 'Enter your account email and verify the OTP sent to your inbox.'
+                  : 'Choose a new password for your FounderLink account.'
+              }}
+            </p>
+          </div>
+          <button class="modal-close" type="button" (click)="store.closeForgotPassword()">Close</button>
+        </div>
+
+        @if (store.forgotPasswordStep() === 1) {
+          <div class="auth-form">
+            <label>
+              <span>Email address</span>
+              <input
+                type="email"
+                [ngModel]="store.forgotPasswordEmail()"
+                (ngModelChange)="store.forgotPasswordEmail.set($event)"
+                placeholder="you@example.com"
+              />
+            </label>
+            <button class="ghost" [disabled]="store.busy()" (click)="requestPasswordResetOtp()">Send OTP</button>
+            <label>
+              <span>OTP code</span>
+              <input
+                inputmode="numeric"
+                maxlength="6"
+                [ngModel]="store.forgotPasswordOtp()"
+                (ngModelChange)="store.forgotPasswordOtp.set($event)"
+                placeholder="Enter 6-digit OTP"
+              />
+            </label>
+            @if (store.backendMessage()) {
+              <p class="empty-state">{{ store.backendMessage() }}</p>
+            }
+            <button class="primary" [disabled]="store.busy()" (click)="verifyPasswordResetOtp()">Verify OTP</button>
+          </div>
+        } @else {
+          <div class="auth-form">
+            <label>
+              <span>New password</span>
+              <input
+                type="password"
+                [ngModel]="store.forgotPasswordNewPassword()"
+                (ngModelChange)="store.forgotPasswordNewPassword.set($event)"
+                placeholder="Create a strong password"
+              />
+            </label>
+            <label>
+              <span>Confirm password</span>
+              <input
+                type="password"
+                [ngModel]="store.forgotPasswordConfirmPassword()"
+                (ngModelChange)="store.forgotPasswordConfirmPassword.set($event)"
+                placeholder="Re-enter password"
+              />
+            </label>
+            @if (store.backendMessage()) {
+              <p class="empty-state">{{ store.backendMessage() }}</p>
+            }
+            <div class="action-row">
+              <button class="ghost" type="button" (click)="store.forgotPasswordStep.set(1)">Back</button>
+              <button class="primary" [disabled]="store.busy()" (click)="resetPassword()">Update password</button>
+            </div>
+          </div>
+        }
+      </section>
+    </div>
+  }
+</div>

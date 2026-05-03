@@ -1,0 +1,470 @@
+<div class="workspace">
+  <section class="workspace-bar">
+    <div>
+      <p class="eyebrow">Service Page</p>
+      <h1>{{ meta().title }}</h1>
+      <p>{{ meta().subtitle }}</p>
+    </div>
+    <div class="bar-actions">
+      <a class="ghost link-button" routerLink="/dashboard">Dashboard</a>
+      <button class="ghost" (click)="store.markNotificationsRead()">Mark notifications read</button>
+      <button class="primary" (click)="logout()">Logout</button>
+    </div>
+  </section>
+
+  <nav class="service-nav">
+    @for (key of store.accessibleServices(); track key) {
+      <a
+        class="service-link"
+        [routerLink]="['/services', key]"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        {{ key | titlecase }}
+      </a>
+    }
+  </nav>
+
+  <main class="content-grid">
+    <section class="main-column">
+      @if (store.backendMessage()) {
+        <section class="panel status-panel">
+          <p>{{ store.backendMessage() }}</p>
+        </section>
+      }
+
+      @if (service() === 'profiles') {
+        <section class="panel">
+          <div class="form-grid">
+            <label>
+              <span>Name</span>
+              <input [ngModel]="store.profileDraft().name" (ngModelChange)="store.updateProfileField('name', $event)" />
+            </label>
+            <label>
+              <span>Email</span>
+              <input [ngModel]="store.profileDraft().email" (ngModelChange)="store.updateProfileField('email', $event)" />
+            </label>
+            <label class="field-wide">
+              <span>Skills</span>
+              <input [ngModel]="store.profileDraft().skills.join(', ')" (ngModelChange)="store.updateProfileList('skills', $event)" />
+            </label>
+            <label>
+              <span>Experience</span>
+              <input [ngModel]="store.profileDraft().experience" (ngModelChange)="store.updateProfileField('experience', $event)" />
+            </label>
+            <label>
+              <span>Location</span>
+              <input [ngModel]="store.profileDraft().location" (ngModelChange)="store.updateProfileField('location', $event)" />
+            </label>
+            <label class="field-wide">
+              <span>Bio</span>
+              <textarea [ngModel]="store.profileDraft().bio" (ngModelChange)="store.updateProfileField('bio', $event)"></textarea>
+            </label>
+            <label class="field-wide">
+              <span>Portfolio Links</span>
+              <input [ngModel]="store.profileDraft().portfolioLinks.join(', ')" (ngModelChange)="store.updateProfileList('portfolioLinks', $event)" />
+            </label>
+          </div>
+          <button class="primary" [disabled]="store.busy()" (click)="store.saveProfile()">Save profile</button>
+        </section>
+      }
+
+      @if (service() === 'startups') {
+        <section class="panel">
+          @if (store.currentRole() === 'ROLE_FOUNDER' || store.currentRole() === 'ROLE_ADMIN') {
+            <div class="form-grid">
+              <label>
+                <span>Startup name</span>
+                <input [ngModel]="store.startupDraft().startupName" (ngModelChange)="store.updateStartupDraft('startupName', $event)" />
+              </label>
+              <label>
+                <span>Industry</span>
+                <input [ngModel]="store.startupDraft().industry" (ngModelChange)="store.updateStartupDraft('industry', $event)" />
+              </label>
+              <label>
+                <span>Stage</span>
+                <select [ngModel]="store.startupDraft().stage" (ngModelChange)="store.updateStartupDraft('stage', $event)">
+                  @for (stage of store.startupStages; track stage) {
+                    <option [ngValue]="stage">{{ stage }}</option>
+                  }
+                </select>
+              </label>
+              <label>
+                <span>Funding goal</span>
+                <input type="number" [ngModel]="store.startupDraft().fundingGoal" (ngModelChange)="store.updateStartupDraft('fundingGoal', $event)" />
+              </label>
+              <label class="field-wide">
+                <span>Description</span>
+                <textarea [ngModel]="store.startupDraft().description" (ngModelChange)="store.updateStartupDraft('description', $event)"></textarea>
+              </label>
+              <label class="field-wide">
+                <span>Problem statement</span>
+                <textarea [ngModel]="store.startupDraft().problemStatement" (ngModelChange)="store.updateStartupDraft('problemStatement', $event)"></textarea>
+              </label>
+              <label class="field-wide">
+                <span>Solution</span>
+                <textarea [ngModel]="store.startupDraft().solution" (ngModelChange)="store.updateStartupDraft('solution', $event)"></textarea>
+              </label>
+              <label class="field-wide">
+                <span>Pitch details</span>
+                <textarea [ngModel]="store.startupDraft().pitch" (ngModelChange)="store.updateStartupDraft('pitch', $event)"></textarea>
+              </label>
+            </div>
+            <div class="action-row">
+              <button class="primary" [disabled]="store.busy()" (click)="store.saveStartup()">Save startup</button>
+              <button class="ghost" (click)="store.resetStartupDraft()">New startup</button>
+              @if (store.startupDraft().id && store.currentRole() === 'ROLE_ADMIN') {
+                <button class="danger" (click)="store.deleteStartup(store.startupDraft().id)">Delete startup</button>
+              }
+            </div>
+          } @else {
+            <p class="empty-state">Only founders and admins can manage startup listings.</p>
+          }
+          <div class="cards-grid">
+            @for (startup of store.managedStartups(); track startup.id) {
+              <article class="card">
+                <div class="card-topline">
+                  <span class="badge">{{ startup.stage }}</span>
+                  <span class="badge status">{{ startup.listingStatus }}</span>
+                </div>
+                <h3>{{ startup.startupName }}</h3>
+                <p>{{ startup.description }}</p>
+                <button class="ghost" (click)="editStartup(startup.id)">Edit</button>
+              </article>
+            } @empty {
+              <p class="empty-state">No startup listings saved yet.</p>
+            }
+          </div>
+        </section>
+      }
+
+      @if (service() === 'discover') {
+        <section class="panel">
+          <div class="filter-grid">
+            <label>
+              <span>Industry</span>
+              <select [ngModel]="store.searchFilters().industry" (ngModelChange)="store.updateSearchFilters('industry', $event)">
+                @for (industry of store.getIndustries(); track industry) {
+                  <option [ngValue]="industry">{{ industry }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>Stage</span>
+              <select [ngModel]="store.searchFilters().stage" (ngModelChange)="store.updateSearchFilters('stage', $event)">
+                <option value="ALL">ALL</option>
+                @for (stage of store.startupStages; track stage) {
+                  <option [ngValue]="stage">{{ stage }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>Funding goal cap</span>
+              <input type="number" [ngModel]="store.searchFilters().fundingGoal" (ngModelChange)="store.updateSearchFilters('fundingGoal', $event)" />
+            </label>
+            <label>
+              <span>Location</span>
+              <input [ngModel]="store.searchFilters().location" (ngModelChange)="store.updateSearchFilters('location', $event)" />
+            </label>
+          </div>
+          <div class="cards-grid">
+            @for (startup of store.visibleStartups(); track startup.id) {
+              <article class="card featured">
+                <div class="card-topline">
+                  <span class="badge">{{ startup.industry }}</span>
+                  <span>{{ store.progressFor(startup) | percent: '1.0-0' }} funded</span>
+                </div>
+                <h3>{{ startup.startupName }}</h3>
+                <p>{{ startup.solution }}</p>
+                <div class="progress-bar">
+                  <span [style.width.%]="store.progressFor(startup) * 100"></span>
+                </div>
+                <div class="action-row">
+                  <button class="ghost" (click)="store.selectStartup(startup.id)">View details</button>
+                  <button class="ghost" (click)="openMessages(startup.founderId)">Message founder</button>
+                  @if (store.currentRole() === 'ROLE_INVESTOR') {
+                    <button class="primary" (click)="openInvestments(startup.id)">Invest</button>
+                    <button class="ghost" (click)="store.followStartup(startup.id)">
+                      {{ store.isFollowing(startup.id) ? 'Following' : 'Follow' }}
+                    </button>
+                  }
+                </div>
+              </article>
+            } @empty {
+              <p class="empty-state">No approved startups match the current filters.</p>
+            }
+          </div>
+        </section>
+      }
+
+      @if (service() === 'investments') {
+        <section class="panel">
+          @if (store.currentRole() === 'ROLE_INVESTOR') {
+            <div class="form-grid compact">
+              <label>
+                <span>Startup</span>
+                <select [ngModel]="store.investmentDraft().startupId" (ngModelChange)="store.updateInvestmentDraft('startupId', $event)">
+                  <option value="">Select startup</option>
+                  @for (startup of store.visibleStartups(); track startup.id) {
+                    <option [value]="startup.id">{{ startup.startupName }}</option>
+                  }
+                </select>
+              </label>
+              <label>
+                <span>Amount</span>
+                <input type="number" [ngModel]="store.investmentDraft().amount" (ngModelChange)="store.updateInvestmentDraft('amount', $event)" />
+              </label>
+            </div>
+            <button class="primary" (click)="store.createInvestment()">Create investment</button>
+          }
+
+          <div class="cards-grid">
+            @if (store.currentRole() === 'ROLE_INVESTOR') {
+              @for (investment of store.investorPortfolio(); track investment.id) {
+                <article class="card">
+                  <div class="card-topline">
+                    <span class="badge">{{ store.getStartupName(investment.startupId) }}</span>
+                    <span class="badge status">{{ investment.status }}</span>
+                  </div>
+                  <h3>{{ investment.amount | currency: 'INR' : 'symbol' : '1.0-0' }}</h3>
+                  <p>{{ investment.createdAt | date: 'mediumDate' }}</p>
+                </article>
+              }
+            } @else if (store.currentRole() === 'ROLE_FOUNDER') {
+              @for (investment of store.founderInvestmentQueue(); track investment.id) {
+                <article class="card">
+                  <div class="card-topline">
+                    <span class="badge">{{ store.getStartupName(investment.startupId) }}</span>
+                    <span class="badge status">{{ investment.status }}</span>
+                  </div>
+                  <h3>{{ store.getUserName(investment.investorId) }}</h3>
+                  <p>{{ investment.amount | currency: 'INR' : 'symbol' : '1.0-0' }}</p>
+                  <p class="workflow-hint">{{ investmentStatusHint(investment.status) }}</p>
+                  <div class="action-row">
+                    <button
+                      class="ghost"
+                      [disabled]="!canSetInvestmentStatus(investment.status, 'APPROVED')"
+                      [title]="investment.status === 'APPROVED' ? 'Already approved' : investmentStatusHint(investment.status)"
+                      (click)="updateInvestmentStatus(investment.id, 'APPROVED', investment.status)"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      class="ghost"
+                      [disabled]="!canSetInvestmentStatus(investment.status, 'REJECTED')"
+                      [title]="investment.status === 'REJECTED' ? 'Already rejected' : investmentStatusHint(investment.status)"
+                      (click)="updateInvestmentStatus(investment.id, 'REJECTED', investment.status)"
+                    >
+                      Reject
+                    </button>
+                    <button
+                      class="primary"
+                      [disabled]="!canSetInvestmentStatus(investment.status, 'COMPLETED')"
+                      [title]="investmentStatusHint(investment.status)"
+                      (click)="updateInvestmentStatus(investment.id, 'COMPLETED', investment.status)"
+                    >
+                      Complete
+                    </button>
+                  </div>
+                </article>
+              }
+            }
+          </div>
+        </section>
+      }
+
+      @if (service() === 'team') {
+        <section class="panel">
+          @if (store.currentRole() === 'ROLE_FOUNDER' || store.currentRole() === 'ROLE_ADMIN') {
+            <div class="form-grid compact">
+              <label>
+                <span>Startup</span>
+                <select [ngModel]="store.inviteDraft().startupId" (ngModelChange)="store.updateInviteDraft('startupId', $event)">
+                  <option value="">Select startup</option>
+                  @for (startup of store.managedStartups(); track startup.id) {
+                    <option [value]="startup.id">{{ startup.startupName }}</option>
+                  }
+                </select>
+              </label>
+              <label>
+                <span>Invitee</span>
+                <select [ngModel]="store.inviteDraft().invitedUserId" (ngModelChange)="store.updateInviteDraft('invitedUserId', $event)">
+                  <option value="">Select co-founder</option>
+                  @for (cofounder of store.getPotentialInvitees(); track cofounder.id) {
+                    <option [value]="cofounder.id">{{ cofounder.profile.name }}</option>
+                  }
+                </select>
+              </label>
+              <label>
+                <span>Role</span>
+                <select [ngModel]="store.inviteDraft().role" (ngModelChange)="store.updateInviteDraft('role', $event)">
+                  @for (role of store.teamRoleOptions; track role) {
+                    <option [value]="role">{{ role }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+            <button class="primary" (click)="store.sendInvite()">Send invitation</button>
+          }
+          @if (store.currentRole() === 'ROLE_COFOUNDER') {
+            <div class="cards-grid">
+              @for (invite of store.incomingInvites(); track invite.id) {
+                <article class="card">
+                  <div class="card-topline">
+                    <span class="badge">{{ invite.role }}</span>
+                    <span class="badge status">{{ invite.status }}</span>
+                  </div>
+                  <h3>{{ store.getStartupName(invite.startupId) }}</h3>
+                  <p>{{ invite.createdAt | date: 'mediumDate' }}</p>
+                  @if (invite.status === 'PENDING') {
+                    <button class="primary" (click)="store.acceptInvite(invite.id)">Accept invitation</button>
+                  }
+                </article>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      @if (service() === 'messages') {
+        <section class="panel messaging-panel">
+          <div class="messaging-layout">
+            <aside class="conversation-list contact-list">
+              <div class="message-list-heading">
+                <p class="eyebrow">People</p>
+                <h3>Message contacts</h3>
+              </div>
+              @for (contact of store.getMessageContacts(); track contact.id) {
+                <button
+                  class="conversation-item contact-item"
+                  [class.active]="store.activeMessagePartner()?.id === contact.id"
+                  (click)="store.openConversation(contact.id)"
+                >
+                  <span class="contact-avatar">{{ contact.profile.name.slice(0, 2).toUpperCase() }}</span>
+                  <span>
+                    <strong>{{ contact.profile.name }}</strong>
+                    <small>{{ store.prettyRole(contact.role) }}</small>
+                  </span>
+                </button>
+              } @empty {
+                <p class="empty-state">No message contacts available for your role.</p>
+              }
+            </aside>
+            <div class="chat-window light-chat">
+              @if (store.activeMessagePartner(); as partner) {
+                <div class="chat-header">
+                  <div>
+                    <p class="eyebrow">Conversation</p>
+                    <h3>{{ partner.profile.name }}</h3>
+                  </div>
+                  <span class="chat-role">{{ store.prettyRole(partner.role) }}</span>
+                </div>
+                <div class="chat-thread">
+                  @for (message of store.conversationMessages(); track message.id) {
+                    <article
+                      class="chat-bubble"
+                      [class.outgoing]="message.senderId === store.currentUser()?.id"
+                      [class.incoming]="message.senderId !== store.currentUser()?.id"
+                    >
+                      <strong class="message-author">
+                        {{ message.senderId === store.currentUser()?.id ? 'You' : partner.profile.name }}
+                      </strong>
+                      <p>{{ message.content }}</p>
+                      <small>{{ store.messageTimeLabel(message.createdAt) }}</small>
+                    </article>
+                  } @empty {
+                    <p class="chat-empty">No messages yet. Send the first note to {{ partner.profile.name }}.</p>
+                  }
+                </div>
+                <div class="chat-compose">
+                  <textarea
+                    [ngModel]="store.messageDraft()"
+                    (ngModelChange)="store.messageDraft.set($event)"
+                    placeholder="Write a clear message..."
+                  ></textarea>
+                  <button class="primary" (click)="store.sendMessage()">Send message</button>
+                </div>
+              } @else {
+                <p class="chat-empty">Choose a person from the left to open the messaging interface.</p>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      @if (service() === 'notifications') {
+        <section class="panel">
+          <div class="cards-grid">
+            @for (notification of store.myNotifications(); track notification.id) {
+              <article class="card" [class.unread]="!notification.read">
+                <div class="card-topline">
+                  <span class="badge">{{ notification.type }}</span>
+                  <span>{{ notification.createdAt | date: 'short' }}</span>
+                </div>
+                <p>{{ notification.text }}</p>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @if (service() === 'admin') {
+        <section class="panel">
+          @if (store.currentRole() === 'ROLE_ADMIN') {
+            <div class="action-row">
+              @for (filter of store.adminQuickFilters; track filter) {
+                <button class="ghost" [class.active-filter]="store.adminFilter() === filter" (click)="store.setAdminFilter(filter)">
+                  {{ filter }}
+                </button>
+              }
+            </div>
+            <div class="cards-grid">
+              @for (startup of store.adminStartups(); track startup.id) {
+                <article class="card">
+                  <div class="card-topline">
+                    <span class="badge">{{ startup.startupName }}</span>
+                    <span class="badge status">{{ startup.listingStatus }}</span>
+                  </div>
+                  <h3>{{ store.getUserName(startup.founderId) }}</h3>
+                  <p>{{ startup.problemStatement }}</p>
+                  <div class="action-row">
+                    <button class="primary" (click)="reviewStartup(startup.id, 'APPROVED')">Approve</button>
+                    <button class="danger" (click)="reviewStartup(startup.id, 'REJECTED')">Reject</button>
+                  </div>
+                </article>
+              }
+            </div>
+          } @else {
+            <p class="empty-state">Only admins can access this service.</p>
+          }
+        </section>
+      }
+    </section>
+
+    @if (service() === 'discover' && store.showSelectedStartupPreview()) {
+      <aside class="side-column">
+        <section class="panel">
+          <p class="eyebrow">Startup Preview</p>
+          @if (store.getSelectedStartup(service()); as startup) {
+            <h2>{{ startup.startupName }}</h2>
+            <p>{{ startup.solution }}</p>
+            <div class="detail-list">
+              <div>
+                <span>Founder</span>
+                <strong>{{ store.getUserName(startup.founderId) }}</strong>
+              </div>
+              <div>
+                <span>Funding goal</span>
+                <strong>{{ startup.fundingGoal | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+              </div>
+              <div>
+                <span>Remaining</span>
+                <strong>{{ store.remainingGoal(startup) | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+              </div>
+            </div>
+          }
+        </section>
+      </aside>
+    }
+  </main>
+</div>

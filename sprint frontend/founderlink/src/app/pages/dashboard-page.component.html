@@ -1,0 +1,81 @@
+<div class="workspace">
+  <section class="workspace-bar">
+    <div>
+      <p class="eyebrow">Dashboard</p>
+      <h1>FounderLink service hub</h1>
+      @if (store.currentUser(); as user) {
+        <p>{{ user.profile.name }} - {{ store.prettyRole(user.role) }} - {{ user.profile.location }}</p>
+      }
+    </div>
+    <div class="bar-actions">
+      <button class="ghost" (click)="store.markNotificationsRead()">Mark notifications read</button>
+      <button class="primary" (click)="logout()">Logout</button>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <article class="stat-card">
+      <span>Approved listings</span>
+      <strong>{{ store.dashboardStats().approvedCount }}</strong>
+      <small>{{ store.dashboardStats().pendingCount }} pending review</small>
+    </article>
+    <article class="stat-card">
+      <span>Total raised</span>
+      <strong>{{ store.dashboardStats().totalRaised | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+      <small>Across tracked investments</small>
+    </article>
+    <article class="stat-card">
+      <span>Completion rate</span>
+      <strong>{{ store.dashboardStats().completionRate | percent: '1.0-0' }}</strong>
+      <small>Raised against funding goals</small>
+    </article>
+    <article class="stat-card">
+      <span>Unread notifications</span>
+      <strong>{{ store.unreadNotificationCount() }}</strong>
+      <small>Event-driven updates waiting</small>
+    </article>
+  </section>
+
+  <main class="dashboard-grid">
+    <section class="main-column">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Available Services</p>
+            <h2>Open each backend-backed workflow on its own page</h2>
+          </div>
+        </div>
+        <div class="services-grid">
+          @for (service of featuredServices(); track service.key) {
+            <article class="service-card">
+              <p class="service-label">{{ service.title }}</p>
+              <h3>{{ service.key | titlecase }}</h3>
+              <p>{{ service.subtitle }}</p>
+              <button class="primary" (click)="openService(service.key)">Open service page</button>
+            </article>
+          }
+        </div>
+      </section>
+
+    </section>
+
+    <aside class="side-column">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Notifications</p>
+            <h2>Latest async events</h2>
+          </div>
+        </div>
+        <div class="notification-list">
+          @for (notification of store.myNotifications().slice(0, 6); track notification.id) {
+            <article class="notification-item" [class.unread]="!notification.read">
+              <p>{{ notification.text }}</p>
+              <small>{{ notification.createdAt | date: 'medium' }}</small>
+            </article>
+          }
+        </div>
+      </section>
+    </aside>
+  </main>
+</div>
