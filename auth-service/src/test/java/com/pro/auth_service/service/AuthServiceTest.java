@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -204,5 +205,112 @@ class AuthServiceTest {
         assertEquals("jwt_token", token);
         verify(userRoleRepository, times(1)).save(any(UserRole.class));
         verify(jwtUtil, times(1)).generateToken("1", Arrays.asList("FOUNDER"));
+    }
+
+    @Test
+    void testVerifyOtpSuccess() {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@test.com");
+        user.setEnabled(false);
+        user.setOtpCode("123456");
+        user.setOtpExpiryAt(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+
+        String result = authService.verifyOtp("test@test.com", "123456");
+
+        assertEquals("Email verified successfully", result);
+        verify(userRepository, times(1)).save(user);
+        verify(notificationProducer, times(1)).sendNotification(any());
+    }
+
+    @Test
+    void testVerifyOtpRejectsExpiredOtp() {
+        User user = new User();
+        user.setEmail("test@test.com");
+        user.setOtpCode("123456");
+        user.setOtpExpiryAt(LocalDateTime.now().minusMinutes(1));
+
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> authService.verifyOtp("test@test.com", "123456"));
+
+        assertEquals("OTP expired. Please resend OTP.", ex.getMessage());
+    }
+
+    @Test
+    void testResendOtpRejectsEnabledUser() {
+        User user = new User();
+        user.setEmail("test@test.com");
+        user.setEnabled(true);
+
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> authService.resendOtp("test@test.com"));
+
+        assertEquals("Email is already verified", ex.getMessage());
+    }
+
+    @Test
+    void testRequestPasswordResetSendsOtp() {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@test.com");
+
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+
+        String result = authService.requestPasswordReset("test@test.com");
+
+        assertEquals("Password reset OTP sent to your email.", result);
+        verify(userRepository, times(1)).save(user);
+        verify(notificationProducer, times(1)).sendNotification(any());
+    }
+
+    @Test
+    void testResetPasswordSuccess() {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@test.com");
+        user.setOtpCode("123456");
+        user.setOtpExpiryAt(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("new-password")).thenReturn("encoded-new-password");
+
+        String result = authService.resetPassword("test@test.com", "123456", "new-password", "new-password");
+
+        assertEquals("Password reset successfully. Please sign in with your new password.", result);
+        assertEquals("encoded-new-password", user.getPassword());
+        verify(userRepository, times(1)).save(user);
+        verify(notificationProducer, times(1)).sendNotification(any());
+    }
+
+    @Test
+    void testResetPasswordRejectsMismatch() {
+        User user = new User();
+        user.setEmail("test@test.com");
+        user.setOtpCode("123456");
+        user.setOtpExpiryAt(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> authService.resetPassword("test@test.com", "123456", "one", "two"));
+
+        assertEquals("Passwords do not match", ex.getMessage());
+    }
+
+    @Test
+    void testGetUserRolesReturnsFirstRolePerUser() {
+        User user = new User();
+        user.setId(1L);
+
+        when(userRepository.findAll()).thenReturn(List.of(user));
+        when(userRoleRepository.findRolesByUserId(1L)).thenReturn(List.of("ROLE_FOUNDER", "ROLE_ADMIN"));
+
+        assertEquals("ROLE_FOUNDER", authService.getUserRoles().get(1L));
     }
 }

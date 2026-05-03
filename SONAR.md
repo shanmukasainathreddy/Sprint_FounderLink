@@ -3,6 +3,11 @@
 This project includes a root `sonar-project.properties` file so you can scan all backend services and the Angular frontend from the repository root.
 Coverage is reported from JaCoCo XML files for Java and LCOV for Angular.
 
+There are two scan modes:
+
+- Aggregate scan: shows everything inside one SonarQube project named `FounderLink`.
+- Separate scan: creates one SonarQube project per service/frontend so each project has its own coverage.
+
 ## 0. Start Docker services
 
 Run this from the project root:
@@ -64,6 +69,42 @@ You can run only the services you want to scan, but Sonar works best when all ma
 
 ## 2. Run SonarQube scan
 
+### Option A: separate projects and separate coverage
+
+Use this if you want SonarQube to show each service separately instead of only one `FounderLink` project:
+
+```bat
+run-sonar-separate.bat http://localhost:9000 YOUR_SONAR_TOKEN FounderLink
+```
+
+This creates projects like:
+
+```text
+FounderLink-api-gateway
+FounderLink-auth-service
+FounderLink-config-server
+FounderLink-eureka-server
+FounderLink-investment-service
+FounderLink-messaging-service
+FounderLink-notification-service
+FounderLink-startup-service
+FounderLink-team-service
+FounderLink-user-service
+FounderLink-frontend
+```
+
+The separate scan excludes boilerplate packages such as `dto`, `entity`, `repository`, `config`, `security`, `client`, `producer`, and exception handlers from coverage. SonarQube will still analyze those files for issues, but the coverage gate focuses on business logic and tested controllers.
+
+If you do not want to install `sonar-scanner`, use Docker for the scanner:
+
+```bat
+run-sonar-separate-docker.bat http://host.docker.internal:9000 YOUR_SONAR_TOKEN FounderLink
+```
+
+Use `host.docker.internal` when the scanner runs inside Docker and SonarQube is running on your Windows host through Docker Desktop.
+
+### Option B: one aggregate FounderLink project
+
 After SonarQube is running and you have created a token, install `sonar-scanner` locally, then from the project root run:
 
 ```bat
@@ -112,7 +153,7 @@ Security Rating on New Code = A
 Maintainability Rating on New Code = A
 ```
 
-Then assign the gate to the `FounderLink` project. The repository can generate the reports, but SonarQube decides whether the project passes the 80% gate.
+Then assign the gate to the `FounderLink` project, or to each separate project if you are using `run-sonar-separate.bat`. The repository can generate the reports, but SonarQube decides whether each project passes the 80% gate.
 
 GitHub Actions also runs Maven `verify` and Angular `test:ci`, then uploads the JaCoCo and LCOV reports as artifacts. A red cross in GitHub means at least one build, test, coverage, or Docker Compose step failed.
 
@@ -121,7 +162,7 @@ GitHub Actions also runs Maven `verify` and Angular `test:ci`, then uploads the 
 ```bat
 docker compose --profile sonar up -d sonarqube-db sonarqube
 build-all-for-sonar.bat
-run-sonar.bat http://localhost:9000 YOUR_SONAR_TOKEN FounderLink
+run-sonar-separate.bat http://localhost:9000 YOUR_SONAR_TOKEN FounderLink
 ```
 
 Docker-only scanner flow:
@@ -129,5 +170,5 @@ Docker-only scanner flow:
 ```bat
 docker compose --profile sonar up -d sonarqube-db sonarqube
 build-all-for-sonar.bat
-run-sonar-docker.bat http://host.docker.internal:9000 YOUR_SONAR_TOKEN FounderLink
+run-sonar-separate-docker.bat http://host.docker.internal:9000 YOUR_SONAR_TOKEN FounderLink
 ```

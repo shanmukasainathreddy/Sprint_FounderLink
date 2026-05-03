@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -144,6 +145,65 @@ class InvestmentServiceTest {
 
         assertEquals(2, result.size());
         verify(repo, times(1)).findAll();
+    }
+
+    @Test
+    void testUpdateStatusDefaultsNullStatusToPending() {
+        Investment existing = new Investment();
+        existing.setId(1L);
+        existing.setStatus("APPROVED");
+
+        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+        when(repo.save(any(Investment.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Investment result = service.updateStatus(1L, null);
+
+        assertEquals("PENDING", result.getStatus());
+        verify(repo, times(1)).save(existing);
+    }
+
+    @Test
+    void testUpdateStatusNormalizesStatus() {
+        Investment existing = new Investment();
+        existing.setId(1L);
+
+        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+        when(repo.save(any(Investment.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Investment result = service.updateStatus(1L, " approved ");
+
+        assertEquals("APPROVED", result.getStatus());
+    }
+
+    @Test
+    void testUpdateStatusNotFound() {
+        when(repo.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> service.updateStatus(99L, "APPROVED"));
+    }
+
+    @Test
+    void testCreateRequiresAuthentication() {
+        SecurityContextHolder.clearContext();
+
+        assertThrows(IllegalStateException.class, () -> service.create(new Investment()));
+    }
+
+    @Test
+    void testCreateContinuesWhenStartupLookupFails() {
+        authenticateAsUser(20L);
+        Investment investment = new Investment();
+        investment.setStartupId(10L);
+        investment.setAmount(5000.0);
+
+        when(repo.save(any(Investment.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(startupServiceClient.getStartupById(10L)).thenThrow(new RuntimeException("service down"));
+
+        Investment result = service.create(investment);
+
+        assertEquals("PENDING", result.getStatus());
+        assertEquals(20L, result.getInvestorId());
+        verify(notificationProducer, times(0)).sendNotification(any(NotificationEvent.class));
     }
 
     private void authenticateAsUser(Long userId) {

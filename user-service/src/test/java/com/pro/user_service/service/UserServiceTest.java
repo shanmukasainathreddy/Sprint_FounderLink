@@ -153,4 +153,84 @@ class UserServiceTest {
         verify(userRepository).upsertProfile(4L, "Saved Founder", "founder@example.com", "");
         verify(userRepository, times(1)).findById(4L);
     }
+
+    @Test
+    void testCreateRejectsDuplicateEmail() {
+        UserRequest request = new UserRequest();
+        request.setName("Duplicate");
+        request.setEmail("duplicate@example.com");
+
+        UserProfile existing = new UserProfile();
+        existing.setId(1L);
+        existing.setEmail("duplicate@example.com");
+
+        when(userRepository.findByEmailIgnoreCase("duplicate@example.com")).thenReturn(Optional.of(existing));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> userService.create(request));
+
+        assertEquals("Email already exists: duplicate@example.com", ex.getMessage());
+    }
+
+    @Test
+    void testUpdateAllowsSameEmailForCurrentUser() {
+        UserProfile existing = new UserProfile();
+        existing.setId(1L);
+        existing.setEmail("same@example.com");
+
+        UserRequest request = new UserRequest();
+        request.setName("Same User");
+        request.setEmail("same@example.com");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(userRepository.findByEmailIgnoreCase("same@example.com")).thenReturn(Optional.of(existing));
+        when(userRepository.save(any(UserProfile.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        UserProfile result = userService.update(1L, request);
+
+        assertEquals("Same User", result.getName());
+        assertEquals("same@example.com", result.getEmail());
+    }
+
+    @Test
+    void testGetDirectoryMapsProfilesToSummaries() {
+        UserProfile profile = new UserProfile();
+        profile.setId(1L);
+        profile.setName("Directory User");
+        profile.setEmail("directory@example.com");
+        profile.setBio("Bio");
+        profile.setSkills("Java");
+        profile.setExperience("3 years");
+        profile.setPortfolioLinks("https://example.com");
+        profile.setLocation("India");
+
+        when(userRepository.findAll()).thenReturn(List.of(profile));
+
+        List<UserSummaryResponse> result = userService.getDirectory();
+
+        assertEquals(1, result.size());
+        assertEquals("Directory User", result.get(0).getName());
+        assertEquals("Java", result.get(0).getSkills());
+    }
+
+    @Test
+    void testSyncProfileResolvesNameFromEmailWhenNameBlank() {
+        UserProfile savedProfile = new UserProfile();
+        savedProfile.setId(8L);
+        savedProfile.setName("founder user");
+        savedProfile.setEmail("founder.user@example.com");
+
+        UserProfileSyncRequest request = new UserProfileSyncRequest();
+        request.setId(8L);
+        request.setName(" ");
+        request.setEmail("founder.user@example.com");
+        request.setBio("Bio");
+
+        when(userRepository.findByEmailIgnoreCase("founder.user@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findById(8L)).thenReturn(Optional.of(savedProfile));
+
+        UserProfile result = userService.syncProfile(request);
+
+        assertEquals("founder user", result.getName());
+        verify(userRepository).upsertProfile(8L, "founder user", "founder.user@example.com", "Bio");
+    }
 }
