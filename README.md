@@ -4,6 +4,65 @@ FounderLink is a full-stack microservices platform that connects startup founder
 
 The project is built with an Angular frontend, Spring Boot backend microservices, Docker Compose for local orchestration, SonarQube for code quality and coverage, and GitHub Actions for CI/CD.
 
+## Developer Skills Demonstrated
+
+This project is designed to show end-to-end software engineering ability across frontend, backend, databases, problem solving, testing, DevOps, and code quality.
+
+| Area | What this project demonstrates |
+| --- | --- |
+| Frontend Development | Angular 20, TypeScript, routing, forms, role-based dashboards, reusable service pages, state management with signals, API integration with `HttpClient` |
+| Backend Development | Java 17, Spring Boot REST APIs, microservices, service-to-service communication, JWT security, validation, exception handling, layered architecture |
+| Microservices Architecture | API Gateway, Config Server, Eureka discovery, independent service boundaries, Dockerized services, asynchronous event flow |
+| Databases | PostgreSQL relational modeling for users, startups, investments, teams, conversations, and messages |
+| Caching | Redis caching in `user-service` for faster profile access |
+| Messaging Systems | RabbitMQ event publishing and consuming for non-blocking notification workflows |
+| DevOps | Docker Compose, multi-container local environment, service health checks, environment-based configuration |
+| CI/CD | GitHub Actions matrix builds, backend verification, frontend build/test pipeline, Docker Compose validation, deploy workflow |
+| Code Quality | SonarQube, JaCoCo, LCOV, quality gates, separate service coverage, test coverage improvements |
+| Testing | JUnit 5, Mockito, Spring Boot tests, Angular Karma/Jasmine tests, controller and service-level test coverage |
+| Programming Fundamentals | Object-oriented design, DTO mapping, authentication flow design, REST API design, error handling, collection transformations, filtering, sorting, role-based access rules |
+| DSA and Problem Solving | Uses maps, sets, lists, filtering, search, role matching, status transitions, conversation grouping, dashboard aggregation, queue-based event handling, and optimized lookup patterns |
+
+## Technical Skill Map
+
+### Frontend
+
+- Built a single-page application using Angular and TypeScript.
+- Implemented route guards for authenticated and guest-only routes.
+- Created role-aware dashboard navigation for founders, investors, co-founders, and admins.
+- Integrated the UI with backend APIs through the API Gateway.
+- Managed local state, backend refresh, session persistence, and computed dashboard data.
+- Used Angular forms for login, registration, OTP verification, startup creation, investments, teams, and messaging.
+
+### Backend
+
+- Built multiple Spring Boot services with clear responsibility boundaries.
+- Implemented REST APIs for auth, users, startups, investments, teams, messaging, and notifications.
+- Added JWT-based security and role-aware behavior.
+- Used OpenFeign for service-to-service communication.
+- Used RabbitMQ to decouple notification delivery from business logic.
+- Used PostgreSQL with Spring Data JPA for persistent storage.
+- Added Redis caching for frequently accessed user profile data.
+
+### DSA and Programming Concepts
+
+- Used `Map` structures for role lookup and fast user-role access.
+- Used `Set` structures to avoid duplicate startup or conversation aggregation.
+- Used list filtering and sorting for dashboards, startup discovery, messages, investments, and notifications.
+- Implemented status transition logic for startup review and investment lifecycle.
+- Implemented conversation grouping and partner resolution for messaging.
+- Used queue-based asynchronous processing with RabbitMQ.
+- Applied object-oriented programming with controllers, services, repositories, DTOs, entities, clients, and producers.
+- Applied validation, exception handling, and clean separation of concerns.
+
+### Database and System Design
+
+- Designed relational persistence around users, roles, profiles, startups, investments, teams, conversations, and messages.
+- Used PostgreSQL for structured transactional data.
+- Used Redis where low-latency cached reads make sense.
+- Used RabbitMQ for eventual notification delivery.
+- Used Docker Compose to run the system as a realistic distributed environment.
+
 ## Project Goals
 
 - Provide a role-based platform for founders, investors, co-founders, and admins.
