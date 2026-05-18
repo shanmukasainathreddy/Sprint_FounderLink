@@ -25,7 +25,6 @@ public class InvestmentController {
 
     private final InvestmentService service;
 
-    // INVEST
     @PostMapping
     @PreAuthorize("hasAnyRole('INVESTOR','ADMIN')")
     public Investment invest(@RequestBody Investment i) {
@@ -38,14 +37,12 @@ public class InvestmentController {
         return service.getAll();
     }
 
-    // VIEW BY STARTUP
     @GetMapping("/startup/{id}")
     @PreAuthorize("hasAnyRole('FOUNDER','ADMIN')")
     public List<Investment> getByStartup(@PathVariable Long id) {
         return service.getByStartup(id);
     }
 
-    // VIEW BY INVESTOR
     @GetMapping("/investor/{id}")
     @PreAuthorize("hasAnyRole('INVESTOR','ADMIN')")
     public List<Investment> getByInvestor(@PathVariable Long id) {

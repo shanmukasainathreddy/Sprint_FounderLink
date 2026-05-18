@@ -11,7 +11,7 @@ import java.security.Key;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "mysecretkeymysecretkeymysecretkey"; // 🔥 at least 32 chars
+    private final String SECRET = "mysecretkeymysecretkeymysecretkey";
 
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());

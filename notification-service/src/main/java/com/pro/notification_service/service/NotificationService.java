@@ -15,8 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 public class NotificationService {
 
     private final JavaMailSender mailSender;
+
     @Value("${spring.mail.username:}")
     private String mailUsername;
+
     @Value("${spring.mail.password:}")
     private String mailPassword;
 

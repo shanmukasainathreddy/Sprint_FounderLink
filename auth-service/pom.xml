@@ -26,7 +26,6 @@
 		<lombok.version>1.18.32</lombok.version>
 	</properties>
 
-	<!-- ✅ REQUIRED for Spring Cloud -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

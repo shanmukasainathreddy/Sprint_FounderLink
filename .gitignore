@@ -12,9 +12,15 @@ build/
 .m2/
 .m2repo/
 node_modules/
+*.class
+__pycache__/
 
 # Duplicate/local nested project copy
 /FounderLink/
+
+# Generated document build output
+docs/.pptx_build/
+docs/ppt_previews/
 
 # Runtime logs
 logs/

@@ -377,7 +377,7 @@ export class AppStore {
     () => this.myNotifications().filter((item) => !item.read).length,
   );
   readonly authStats = computed(() => {
-    const investments = this.state().investments.filter((investment) => investment.status !== 'REJECTED');
+    const investments = this.state().investments.filter((investment) => this.isFundedInvestment(investment));
     return {
       founders: this.state().users.filter((user) => user.role === 'ROLE_FOUNDER').length,
       investors: this.state().users.filter((user) => user.role === 'ROLE_INVESTOR').length,
@@ -408,7 +408,7 @@ export class AppStore {
     const investments = this.state().investments;
     const approvedCount = startups.filter((startup) => startup.listingStatus === 'APPROVED').length;
     const pendingCount = startups.filter((startup) => startup.listingStatus === 'PENDING_REVIEW').length;
-    const activeInvestments = investments.filter((investment) => investment.status !== 'REJECTED');
+    const activeInvestments = investments.filter((investment) => this.isFundedInvestment(investment));
     const raised = activeInvestments.reduce((sum, investment) => sum + Number(investment.amount), 0);
     const fundingGoal = startups.reduce((sum, startup) => sum + Number(startup.fundingGoal), 0);
     return {
@@ -1219,7 +1219,7 @@ export class AppStore {
 
   progressFor(startup: Startup): number {
     const raised = this.state()
-      .investments.filter((investment) => investment.startupId === startup.id && investment.status !== 'REJECTED')
+      .investments.filter((investment) => investment.startupId === startup.id && this.isFundedInvestment(investment))
       .reduce((sum, investment) => sum + investment.amount, 0);
     return Math.min(raised / startup.fundingGoal, 1);
   }
@@ -1714,6 +1714,10 @@ export class AppStore {
 
   private getStartupById(startupId: string): Startup | undefined {
     return this.state().startups.find((startup) => startup.id === startupId);
+  }
+
+  private isFundedInvestment(investment: Investment): boolean {
+    return investment.status === 'APPROVED' || investment.status === 'COMPLETED';
   }
 
   private toList(value: string): string[] {

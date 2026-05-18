@@ -1,0 +1,343 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R] /Count 6 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 4056 >>
+stream
+BT /F2 23 Tf 46.00 795.89 Td (FounderLink Project Flow and Code) Tj ET
+BT /F2 23 Tf 46.00 766.89 Td (Interview Questions) Tj ET
+BT /F1 10 Tf 46.00 729.89 Td (Generated: May 11, 2026) Tj ET
+BT /F1 10 Tf 46.00 712.89 Td (This PDF is prepared for interview revision. It explains the project flow and lists) Tj ET
+BT /F1 10 Tf 46.00 698.89 Td (code-based questions an interviewer can ask from this FounderLink codebase.) Tj ET
+BT /F2 16 Tf 46.00 671.89 Td (Project Flow Summary) Tj ET
+BT /F1 10 Tf 46.00 645.89 Td (FounderLink is a full-stack microservices platform that connects startup founders,) Tj ET
+BT /F1 10 Tf 46.00 631.89 Td (investors, co-founders, and admins. The frontend is Angular. The backend is split into) Tj ET
+BT /F1 10 Tf 46.00 617.89 Td (Spring Boot microservices. Docker Compose runs the supporting infrastructure.) Tj ET
+BT /F2 9 Tf 54.00 596.89 Td (Browser -> Angular frontend -> API Gateway -> Spring Boot microservice -> Controller ->) Tj ET
+BT /F2 9 Tf 54.00 583.89 Td (Service -> Repository / Feign / RabbitMQ -> PostgreSQL / Redis / Notification Service ->) Tj ET
+BT /F2 9 Tf 54.00 570.89 Td (Response back to Angular) Tj ET
+BT /F1 10 Tf 60.00 553.89 Td (- Angular frontend runs from sprint frontend/founderlink and manages session, forms,) Tj ET
+BT /F1 10 Tf 60.00 539.89 Td (  dashboards, and service pages through AppStore.) Tj ET
+BT /F1 10 Tf 60.00 525.89 Td (- API Gateway is the single backend entry point on port 8080.) Tj ET
+BT /F1 10 Tf 60.00 511.89 Td (- Config Server centralizes service configuration on port 8888.) Tj ET
+BT /F1 10 Tf 60.00 497.89 Td (- Eureka Server provides service discovery on port 8761.) Tj ET
+BT /F1 10 Tf 60.00 483.89 Td (- PostgreSQL stores auth, user, startup, investment, team, and messaging data.) Tj ET
+BT /F1 10 Tf 60.00 469.89 Td (- Redis is used by user-service for user profile caching.) Tj ET
+BT /F1 10 Tf 60.00 455.89 Td (- RabbitMQ carries notification events to notification-service.) Tj ET
+BT /F2 16 Tf 46.00 431.89 Td (Main User Journey) Tj ET
+BT /F1 10 Tf 60.00 405.89 Td (- A user opens the Angular app and chooses a role such as founder, investor, co-founder,) Tj ET
+BT /F1 10 Tf 60.00 391.89 Td (  or admin.) Tj ET
+BT /F1 10 Tf 60.00 377.89 Td (- Registration goes to POST /auth/register through the gateway.) Tj ET
+BT /F1 10 Tf 60.00 363.89 Td (- Auth service encodes the password, assigns a role, creates an OTP, syncs profile data to) Tj ET
+BT /F1 10 Tf 60.00 349.89 Td (  user-service, and publishes an OTP notification event.) Tj ET
+BT /F1 10 Tf 60.00 335.89 Td (- User verifies OTP using POST /auth/verify-otp.) Tj ET
+BT /F1 10 Tf 60.00 321.89 Td (- Login goes to POST /auth/login and returns a JWT.) Tj ET
+BT /F1 10 Tf 60.00 307.89 Td (- Angular stores the JWT and sends it in the Authorization header for protected requests.) Tj ET
+BT /F1 10 Tf 60.00 293.89 Td (- Founders create startup listings through startup-service.) Tj ET
+BT /F1 10 Tf 60.00 279.89 Td (- Admins approve or reject startup listings.) Tj ET
+BT /F1 10 Tf 60.00 265.89 Td (- Investors discover approved startups and create investment requests.) Tj ET
+BT /F1 10 Tf 60.00 251.89 Td (- Founders review investment requests and update status.) Tj ET
+BT /F1 10 Tf 60.00 237.89 Td (- Founders invite co-founders using team-service.) Tj ET
+BT /F1 10 Tf 60.00 223.89 Td (- Users create conversations and send messages through messaging-service.) Tj ET
+BT /F1 10 Tf 60.00 209.89 Td (- Notification-service consumes RabbitMQ events and sends emails.) Tj ET
+BT /F2 16 Tf 46.00 185.89 Td (Service Responsibilities) Tj ET
+BT /F2 12 Tf 46.00 154.89 Td (API Gateway) Tj ET
+BT /F1 10 Tf 60.00 135.89 Td (- Routes frontend calls to /auth, /users, /startups, /investments, /teams, /messages, and) Tj ET
+BT /F1 10 Tf 60.00 121.89 Td (  /notifications.) Tj ET
+BT /F1 10 Tf 60.00 107.89 Td (- Handles CORS and exposes aggregated Swagger links.) Tj ET
+BT /F2 12 Tf 46.00 88.89 Td (Auth Service) Tj ET
+BT /F1 10 Tf 60.00 69.89 Td (- Owns registration, OTP verification, login, roles, JWT creation, and password reset.) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 3539 >>
+stream
+BT /F1 10 Tf 60.00 795.89 Td (- Uses PasswordEncoder, JJWT, PostgreSQL, Feign user profile sync, and RabbitMQ) Tj ET
+BT /F1 10 Tf 60.00 781.89 Td (  notification events.) Tj ET
+BT /F2 12 Tf 46.00 762.89 Td (User Service) Tj ET
+BT /F1 10 Tf 60.00 743.89 Td (- Owns profile data, directory data, internal user summaries, and profile sync from) Tj ET
+BT /F1 10 Tf 60.00 729.89 Td (  auth-service.) Tj ET
+BT /F1 10 Tf 60.00 715.89 Td (- Uses Redis cache with @Cacheable and @CachePut.) Tj ET
+BT /F2 12 Tf 46.00 696.89 Td (Startup Service) Tj ET
+BT /F1 10 Tf 60.00 677.89 Td (- Owns startup creation, listing, search, update, admin review, and status notifications.) Tj ET
+BT /F1 10 Tf 60.00 663.89 Td (- Gets authenticated founder id from SecurityContextHolder instead of trusting client-sent) Tj ET
+BT /F1 10 Tf 60.00 649.89 Td (  userId.) Tj ET
+BT /F2 12 Tf 46.00 630.89 Td (Investment Service) Tj ET
+BT /F1 10 Tf 60.00 611.89 Td (- Owns investment requests and status transitions such as PENDING, APPROVED, REJECTED, and) Tj ET
+BT /F1 10 Tf 60.00 597.89 Td (  COMPLETED.) Tj ET
+BT /F1 10 Tf 60.00 583.89 Td (- Calls startup-service to find the founder and user-service to find founder email before) Tj ET
+BT /F1 10 Tf 60.00 569.89 Td (  sending a notification.) Tj ET
+BT /F2 12 Tf 46.00 550.89 Td (Team Service) Tj ET
+BT /F1 10 Tf 60.00 531.89 Td (- Owns co-founder invitations and accepted team memberships.) Tj ET
+BT /F1 10 Tf 60.00 517.89 Td (- Checks that a user can accept only their own invite unless the requester is admin.) Tj ET
+BT /F2 12 Tf 46.00 498.89 Td (Messaging Service) Tj ET
+BT /F1 10 Tf 60.00 479.89 Td (- Owns conversations and messages.) Tj ET
+BT /F1 10 Tf 60.00 465.89 Td (- Reuses existing conversations between two users and checks sender identity before saving) Tj ET
+BT /F1 10 Tf 60.00 451.89 Td (  messages.) Tj ET
+BT /F2 12 Tf 46.00 432.89 Td (Notification Service) Tj ET
+BT /F1 10 Tf 60.00 413.89 Td (- Consumes RabbitMQ notification.queue events and sends email.) Tj ET
+BT /F1 10 Tf 60.00 399.89 Td (- Uses AmqpRejectAndDontRequeueException to avoid endless retries when email delivery) Tj ET
+BT /F1 10 Tf 60.00 385.89 Td (  fails.) Tj ET
+BT /F2 16 Tf 46.00 361.89 Td (End-to-End Example Flows) Tj ET
+BT /F2 12 Tf 46.00 330.89 Td (Registration Flow) Tj ET
+BT /F2 9 Tf 54.00 307.89 Td (Angular register form -> POST /auth/register -> AuthController -> AuthService.register ->) Tj ET
+BT /F2 9 Tf 54.00 294.89 Td (UserRepository + RoleRepository -> Feign UserProfileClient -> RabbitMQ notification -> OTP) Tj ET
+BT /F2 9 Tf 54.00 281.89 Td (email) Tj ET
+BT /F2 12 Tf 46.00 259.89 Td (Create Startup Flow) Tj ET
+BT /F2 9 Tf 54.00 236.89 Td (Founder form -> POST /startups -> JwtFilter -> StartupController -> StartupService.create ->) Tj ET
+BT /F2 9 Tf 54.00 223.89 Td (PostgreSQL save -> Feign user lookup -> RabbitMQ notification -> Angular state update) Tj ET
+BT /F2 12 Tf 46.00 201.89 Td (Create Investment Flow) Tj ET
+BT /F2 9 Tf 54.00 178.89 Td (Investor clicks Invest -> POST /investments -> InvestmentService.create -> save PENDING) Tj ET
+BT /F2 9 Tf 54.00 165.89 Td (investment -> Feign startup lookup -> Feign user lookup -> RabbitMQ notification -> founder) Tj ET
+BT /F2 9 Tf 54.00 152.89 Td (email) Tj ET
+BT /F2 12 Tf 46.00 130.89 Td (Send Message Flow) Tj ET
+BT /F2 9 Tf 54.00 107.89 Td (User sends message -> POST /messages -> MessagingService.sendMessage -> validate sender ->) Tj ET
+BT /F2 9 Tf 54.00 94.89 Td (save message -> Feign user summaries -> RabbitMQ notification -> recipient email) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 10 0 R >>
+endobj
+10 0 obj
+<< /Length 4157 >>
+stream
+BT /F2 16 Tf 46.00 785.89 Td (Architecture Questions) Tj ET
+BT /F2 10.5 Tf 46.00 756.89 Td (Q. Why did you choose microservices for FounderLink?) Tj ET
+BT /F1 10 Tf 58.00 742.89 Td (A. Each domain has a separate responsibility: auth, profiles, startups, investments,) Tj ET
+BT /F1 10 Tf 58.00 728.89 Td (teams, messaging, and notifications. This improves separation of concerns and makes each) Tj ET
+BT /F1 10 Tf 58.00 714.89 Td (service easier to test and scale independently.) Tj ET
+BT /F2 10.5 Tf 46.00 693.89 Td (Q. What is the role of API Gateway?) Tj ET
+BT /F1 10 Tf 58.00 679.89 Td (A. The gateway gives the frontend one backend URL and routes requests to the correct) Tj ET
+BT /F1 10 Tf 58.00 665.89 Td (service. It also centralizes CORS and Swagger aggregation.) Tj ET
+BT /F2 10.5 Tf 46.00 644.89 Td (Q. Why are Config Server and Eureka used?) Tj ET
+BT /F1 10 Tf 58.00 630.89 Td (A. Config Server centralizes service properties. Eureka allows services to register and) Tj ET
+BT /F1 10 Tf 58.00 616.89 Td (discover each other, which is useful when services move, restart, or scale.) Tj ET
+BT /F2 10.5 Tf 46.00 595.89 Td (Q. Why use RabbitMQ for notifications?) Tj ET
+BT /F1 10 Tf 58.00 581.89 Td (A. Email sending should not block user actions. Services publish NotificationEvent) Tj ET
+BT /F1 10 Tf 58.00 567.89 Td (messages, and notification-service handles email delivery asynchronously.) Tj ET
+BT /F2 10.5 Tf 46.00 546.89 Td (Q. Why is Redis used only in user-service?) Tj ET
+BT /F1 10 Tf 58.00 532.89 Td (A. User profile reads are common across services. Redis reduces repeated database hits) Tj ET
+BT /F1 10 Tf 58.00 518.89 Td (for profile lookup while keeping the source of truth in PostgreSQL.) Tj ET
+BT /F2 16 Tf 46.00 490.89 Td (Spring Boot and Java Questions) Tj ET
+BT /F2 10.5 Tf 46.00 461.89 Td (Q. Explain the controller-service-repository pattern in this project.) Tj ET
+BT /F1 10 Tf 58.00 447.89 Td (A. Controllers expose REST endpoints, services contain business logic, and repositories) Tj ET
+BT /F1 10 Tf 58.00 433.89 Td (handle persistence through Spring Data JPA.) Tj ET
+BT /F2 10.5 Tf 46.00 412.89 Td (Q. What does @RequiredArgsConstructor do here?) Tj ET
+BT /F1 10 Tf 58.00 398.89 Td (A. Lombok generates a constructor for final fields, so Spring can inject dependencies) Tj ET
+BT /F1 10 Tf 58.00 384.89 Td (without manual constructor code.) Tj ET
+BT /F2 10.5 Tf 46.00 363.89 Td (Q. Where is business logic placed?) Tj ET
+BT /F1 10 Tf 58.00 349.89 Td (A. Business logic is mainly in service classes such as AuthService, StartupService,) Tj ET
+BT /F1 10 Tf 58.00 335.89 Td (InvestmentService, TeamService, MessagingService, and UserService.) Tj ET
+BT /F2 10.5 Tf 46.00 314.89 Td (Q. Why is PasswordEncoder used in AuthService?) Tj ET
+BT /F1 10 Tf 58.00 300.89 Td (A. Passwords must not be stored as plain text. PasswordEncoder stores a secure hash and) Tj ET
+BT /F1 10 Tf 58.00 286.89 Td (checks login using matches\(\).) Tj ET
+BT /F2 10.5 Tf 46.00 265.89 Td (Q. How does AuthService normalize roles?) Tj ET
+BT /F1 10 Tf 58.00 251.89 Td (A. It trims input, uppercases it, removes ROLE_ prefix and separators, maps COFUNDER to) Tj ET
+BT /F1 10 Tf 58.00 237.89 Td (COFOUNDER, and checks against role records.) Tj ET
+BT /F2 10.5 Tf 46.00 216.89 Td (Q. What happens if a user logs in without OTP verification?) Tj ET
+BT /F1 10 Tf 58.00 202.89 Td (A. AuthService generates a new OTP, saves it, sends a notification, and rejects login) Tj ET
+BT /F1 10 Tf 58.00 188.89 Td (until verification is complete.) Tj ET
+BT /F2 10.5 Tf 46.00 167.89 Td (Q. Why does StartupService.create set startup id to null?) Tj ET
+BT /F1 10 Tf 58.00 153.89 Td (A. It prevents a detached-entity merge when the client accidentally sends an id during) Tj ET
+BT /F1 10 Tf 58.00 139.89 Td (create.) Tj ET
+BT /F2 10.5 Tf 46.00 118.89 Td (Q. Why does StartupService use SecurityContextHolder?) Tj ET
+BT /F1 10 Tf 58.00 104.89 Td (A. It reads the authenticated user id from the JWT context, so the founder id cannot be) Tj ET
+BT /F1 10 Tf 58.00 90.89 Td (forged in the request body.) Tj ET
+BT /F2 10.5 Tf 46.00 69.89 Td (Q. How is investment status handled?) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 12 0 R >>
+endobj
+12 0 obj
+<< /Length 4027 >>
+stream
+BT /F1 10 Tf 58.00 795.89 Td (A. InvestmentService creates new investments as PENDING and updateStatus converts) Tj ET
+BT /F1 10 Tf 58.00 781.89 Td (provided status to uppercase before saving.) Tj ET
+BT /F2 10.5 Tf 46.00 760.89 Td (Q. Why does InvestmentService catch RuntimeException in notifyFounder?) Tj ET
+BT /F1 10 Tf 58.00 746.89 Td (A. Investment creation should still succeed even if startup lookup, user lookup,) Tj ET
+BT /F1 10 Tf 58.00 732.89 Td (RabbitMQ, or email infrastructure is temporarily unavailable.) Tj ET
+BT /F2 16 Tf 46.00 704.89 Td (Security Questions) Tj ET
+BT /F2 10.5 Tf 46.00 675.89 Td (Q. How is JWT used in this project?) Tj ET
+BT /F1 10 Tf 58.00 661.89 Td (A. Auth service generates JWTs after login. Other services use JWT filters to validate) Tj ET
+BT /F1 10 Tf 58.00 647.89 Td (the Authorization header and set the authenticated user in the security context.) Tj ET
+BT /F2 10.5 Tf 46.00 626.89 Td (Q. Why is user id stored as JWT subject?) Tj ET
+BT /F1 10 Tf 58.00 612.89 Td (A. Services can identify the logged-in user without calling auth-service for every) Tj ET
+BT /F1 10 Tf 58.00 598.89 Td (request.) Tj ET
+BT /F2 10.5 Tf 46.00 577.89 Td (Q. How does TeamService prevent accepting someone elses invitation?) Tj ET
+BT /F1 10 Tf 58.00 563.89 Td (A. It compares the authenticated user id with request.userId and allows mismatch only) Tj ET
+BT /F1 10 Tf 58.00 549.89 Td (for ROLE_ADMIN.) Tj ET
+BT /F2 10.5 Tf 46.00 528.89 Td (Q. How does MessagingService protect conversations?) Tj ET
+BT /F1 10 Tf 58.00 514.89 Td (A. It requires the authenticated user to be a participant when creating a conversation) Tj ET
+BT /F1 10 Tf 58.00 500.89 Td (and allows users to view only their own conversation list.) Tj ET
+BT /F2 10.5 Tf 46.00 479.89 Td (Q. What is the risk if services trusted userId from frontend?) Tj ET
+BT /F1 10 Tf 58.00 465.89 Td (A. A malicious client could create startups, investments, messages, or team actions on) Tj ET
+BT /F1 10 Tf 58.00 451.89 Td (behalf of another user.) Tj ET
+BT /F2 16 Tf 46.00 423.89 Td (Database and JPA Questions) Tj ET
+BT /F2 10.5 Tf 46.00 394.89 Td (Q. Why use repositories instead of direct SQL in most places?) Tj ET
+BT /F1 10 Tf 58.00 380.89 Td (A. Spring Data JPA repositories reduce boilerplate and provide common CRUD operations) Tj ET
+BT /F1 10 Tf 58.00 366.89 Td (with readable method names.) Tj ET
+BT /F2 10.5 Tf 46.00 345.89 Td (Q. Where is a custom database operation used?) Tj ET
+BT /F1 10 Tf 58.00 331.89 Td (A. UserRepository has an upsert-style profile sync used by auth-service registration and) Tj ET
+BT /F1 10 Tf 58.00 317.89 Td (login recovery.) Tj ET
+BT /F2 10.5 Tf 46.00 296.89 Td (Q. Why validate email uniqueness in UserService?) Tj ET
+BT /F1 10 Tf 58.00 282.89 Td (A. It prevents two profiles from sharing the same email and allows the current user to) Tj ET
+BT /F1 10 Tf 58.00 268.89 Td (keep their own email during update.) Tj ET
+BT /F2 10.5 Tf 46.00 247.89 Td (Q. What data belongs in auth-service and what belongs in user-service?) Tj ET
+BT /F1 10 Tf 58.00 233.89 Td (A. Auth owns credentials, roles, OTP, and JWT. User-service owns profile fields such as) Tj ET
+BT /F1 10 Tf 58.00 219.89 Td (name, bio, skills, experience, links, and location.) Tj ET
+BT /F2 16 Tf 46.00 191.89 Td (Feign and Service Communication Questions) Tj ET
+BT /F2 10.5 Tf 46.00 162.89 Td (Q. Where is Feign used?) Tj ET
+BT /F1 10 Tf 58.00 148.89 Td (A. Auth syncs profiles to user-service. Startup, investment, team, and messaging) Tj ET
+BT /F1 10 Tf 58.00 134.89 Td (services fetch user summaries. Investment also calls startup-service.) Tj ET
+BT /F2 10.5 Tf 46.00 113.89 Td (Q. Why not duplicate founder email in Investment entity?) Tj ET
+BT /F1 10 Tf 58.00 99.89 Td (A. The source of truth for profile and email data is user-service. Investment stores) Tj ET
+BT /F1 10 Tf 58.00 85.89 Td (business data and fetches profile summary when needed.) Tj ET
+BT /F2 10.5 Tf 46.00 64.89 Td (Q. What should happen if Feign call fails during notification?) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 14 0 R >>
+endobj
+14 0 obj
+<< /Length 3685 >>
+stream
+BT /F1 10 Tf 58.00 795.89 Td (A. The main operation should usually succeed, and notification failure should be logged) Tj ET
+BT /F1 10 Tf 58.00 781.89 Td (or handled asynchronously.) Tj ET
+BT /F2 16 Tf 46.00 753.89 Td (RabbitMQ Questions) Tj ET
+BT /F2 10.5 Tf 46.00 724.89 Td (Q. What is NotificationEvent?) Tj ET
+BT /F1 10 Tf 58.00 710.89 Td (A. It is a small DTO carrying email and message from producer services to) Tj ET
+BT /F1 10 Tf 58.00 696.89 Td (notification-service.) Tj ET
+BT /F2 10.5 Tf 46.00 675.89 Td (Q. Which services publish notifications?) Tj ET
+BT /F1 10 Tf 58.00 661.89 Td (A. Auth, startup, investment, team, and messaging services publish notification events.) Tj ET
+BT /F2 10.5 Tf 46.00 640.89 Td (Q. What does @RabbitListener do?) Tj ET
+BT /F1 10 Tf 58.00 626.89 Td (A. It subscribes notification-service to the configured queue and invokes the consumer) Tj ET
+BT /F1 10 Tf 58.00 612.89 Td (method when events arrive.) Tj ET
+BT /F2 10.5 Tf 46.00 591.89 Td (Q. Why reject without requeue on email failure?) Tj ET
+BT /F1 10 Tf 58.00 577.89 Td (A. If credentials or email data are invalid, requeueing forever can create repeated) Tj ET
+BT /F1 10 Tf 58.00 563.89 Td (failures and block the queue.) Tj ET
+BT /F2 16 Tf 46.00 535.89 Td (Angular Questions) Tj ET
+BT /F2 10.5 Tf 46.00 506.89 Td (Q. What is AppStore responsible for?) Tj ET
+BT /F1 10 Tf 58.00 492.89 Td (A. It centralizes frontend state, session token, users, startups, investments, invites,) Tj ET
+BT /F1 10 Tf 58.00 478.89 Td (messages, notifications, and HTTP methods.) Tj ET
+BT /F2 10.5 Tf 46.00 457.89 Td (Q. How does Angular decide the backend URL?) Tj ET
+BT /F1 10 Tf 58.00 443.89 Td (A. resolveApiBase builds http://current-host:8080, so the frontend calls the gateway on) Tj ET
+BT /F1 10 Tf 58.00 429.89 Td (the same host.) Tj ET
+BT /F2 10.5 Tf 46.00 408.89 Td (Q. Why store the JWT in frontend state/session?) Tj ET
+BT /F1 10 Tf 58.00 394.89 Td (A. The JWT must be added to Authorization headers for protected backend operations.) Tj ET
+BT /F2 10.5 Tf 46.00 373.89 Td (Q. What is the advantage of mapping backend DTOs to frontend models?) Tj ET
+BT /F1 10 Tf 58.00 359.89 Td (A. The UI can use clean names and types while the backend can keep its own entity and) Tj ET
+BT /F1 10 Tf 58.00 345.89 Td (DTO shape.) Tj ET
+BT /F2 16 Tf 46.00 317.89 Td (Testing and Quality Questions) Tj ET
+BT /F2 10.5 Tf 46.00 288.89 Td (Q. What kinds of tests exist in the project?) Tj ET
+BT /F1 10 Tf 58.00 274.89 Td (A. There are controller tests, service tests, repository tests, JWT filter tests, and) Tj ET
+BT /F1 10 Tf 58.00 260.89 Td (application context tests across services.) Tj ET
+BT /F2 10.5 Tf 46.00 239.89 Td (Q. What is the purpose of SonarQube here?) Tj ET
+BT /F1 10 Tf 58.00 225.89 Td (A. SonarQube reports code quality, coverage, duplication, bugs, vulnerabilities, and) Tj ET
+BT /F1 10 Tf 58.00 211.89 Td (maintainability issues.) Tj ET
+BT /F2 10.5 Tf 46.00 190.89 Td (Q. Why use JaCoCo?) Tj ET
+BT /F1 10 Tf 58.00 176.89 Td (A. JaCoCo generates Java test coverage reports that SonarQube can analyze.) Tj ET
+BT /F2 10.5 Tf 46.00 155.89 Td (Q. What would you test in AuthService?) Tj ET
+BT /F1 10 Tf 58.00 141.89 Td (A. Registration, duplicate email behavior, OTP expiry, invalid OTP, login before) Tj ET
+BT /F1 10 Tf 58.00 127.89 Td (verification, wrong password, role mismatch, JWT generation, and password reset.) Tj ET
+BT /F2 10.5 Tf 46.00 106.89 Td (Q. What would you test in MessagingService?) Tj ET
+BT /F1 10 Tf 58.00 92.89 Td (A. Conversation reuse, sender validation, participant validation, message ordering, and) Tj ET
+BT /F1 10 Tf 58.00 78.89 Td (notification publishing behavior.) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 16 0 R >>
+endobj
+16 0 obj
+<< /Length 5213 >>
+stream
+BT /F2 16 Tf 46.00 785.89 Td (Common Interview Follow-ups) Tj ET
+BT /F2 10.5 Tf 46.00 756.89 Td (Q. Explain one complete flow from frontend click to database save.) Tj ET
+BT /F1 10 Tf 58.00 742.89 Td (A. Example: when a founder creates a startup, the Angular service page calls) Tj ET
+BT /F1 10 Tf 58.00 728.89 Td (AppStore.saveStartup\(\). AppStore sends POST /startups to the API Gateway with the JWT) Tj ET
+BT /F1 10 Tf 58.00 714.89 Td (token. The gateway routes the request to startup-service. JwtFilter validates the token) Tj ET
+BT /F1 10 Tf 58.00 700.89 Td (and puts the authenticated user id into SecurityContextHolder. StartupController) Tj ET
+BT /F1 10 Tf 58.00 686.89 Td (receives the request and calls StartupService.create\(\). The service sets id to null,) Tj ET
+BT /F1 10 Tf 58.00 672.89 Td (takes founder userId from the authenticated context, saves the Startup entity through) Tj ET
+BT /F1 10 Tf 58.00 658.89 Td (StartupRepository into PostgreSQL, optionally publishes a notification event, and) Tj ET
+BT /F1 10 Tf 58.00 644.89 Td (returns the saved startup to Angular.) Tj ET
+BT /F2 10.5 Tf 46.00 623.89 Td (Q. Show where JWT validation happens and how the authenticated user id is used.) Tj ET
+BT /F1 10 Tf 58.00 609.89 Td (A. JWT validation happens in each protected service through its JwtFilter class. The) Tj ET
+BT /F1 10 Tf 58.00 595.89 Td (filter reads the Authorization header, validates the token using JwtUtil, extracts the) Tj ET
+BT /F1 10 Tf 58.00 581.89 Td (subject, and sets Authentication in SecurityContextHolder. Services such as) Tj ET
+BT /F1 10 Tf 58.00 567.89 Td (StartupService, InvestmentService, TeamService, and MessagingService read) Tj ET
+BT /F1 10 Tf 58.00 553.89 Td (SecurityContextHolder.getContext\(\).getAuthentication\(\).getName\(\) to get the logged-in) Tj ET
+BT /F1 10 Tf 58.00 539.89 Td (user id. This prevents clients from spoofing user ids in request bodies.) Tj ET
+BT /F2 10.5 Tf 46.00 518.89 Td (Q. Explain why notification is asynchronous.) Tj ET
+BT /F1 10 Tf 58.00 504.89 Td (A. Notification is asynchronous because email delivery can be slow or fail due to SMTP) Tj ET
+BT /F1 10 Tf 58.00 490.89 Td (or network issues. In FounderLink, business services publish NotificationEvent messages) Tj ET
+BT /F1 10 Tf 58.00 476.89 Td (to RabbitMQ and immediately continue their main operation. notification-service consumes) Tj ET
+BT /F1 10 Tf 58.00 462.89 Td (the event later and sends email. This keeps registration, startup creation, investment) Tj ET
+BT /F1 10 Tf 58.00 448.89 Td (creation, team invite, and messaging flows fast and resilient.) Tj ET
+BT /F2 10.5 Tf 46.00 427.89 Td (Q. Explain how services communicate with each other.) Tj ET
+BT /F1 10 Tf 58.00 413.89 Td (A. The frontend communicates only with API Gateway. The gateway routes HTTP requests to) Tj ET
+BT /F1 10 Tf 58.00 399.89 Td (backend services. Backend services communicate synchronously using OpenFeign when they) Tj ET
+BT /F1 10 Tf 58.00 385.89 Td (need immediate data, such as user-service profile summaries or startup-service startup) Tj ET
+BT /F1 10 Tf 58.00 371.89 Td (details. They communicate asynchronously using RabbitMQ for notification events.) Tj ET
+BT /F1 10 Tf 58.00 357.89 Td (Services also register with Eureka and read shared configuration from Config Server.) Tj ET
+BT /F2 10.5 Tf 46.00 336.89 Td (Q. Explain what you would improve if you had more time.) Tj ET
+BT /F1 10 Tf 58.00 322.89 Td (A. I would improve security, resilience, configuration, and testing. For security, I) Tj ET
+BT /F1 10 Tf 58.00 308.89 Td (would add refresh tokens and stronger method-level role checks. For resilience, I would) Tj ET
+BT /F1 10 Tf 58.00 294.89 Td (add circuit breakers around Feign calls and dead-letter queues for failed RabbitMQ) Tj ET
+BT /F1 10 Tf 58.00 280.89 Td (messages. For maintainability, I would add a centralized error response format and use) Tj ET
+BT /F1 10 Tf 58.00 266.89 Td (Docker secrets instead of plain environment passwords. For architecture, I would) Tj ET
+BT /F1 10 Tf 58.00 252.89 Td (consider separate databases per service. For quality, I would add Testcontainers-based) Tj ET
+BT /F1 10 Tf 58.00 238.89 Td (integration tests for PostgreSQL, RabbitMQ, Redis, and service interactions.) Tj ET
+BT /F2 12 Tf 46.00 215.89 Td (Short Improvements List) Tj ET
+BT /F1 10 Tf 60.00 196.89 Td (- Refresh tokens for safer long-running sessions.) Tj ET
+BT /F1 10 Tf 60.00 182.89 Td (- Stronger role-based authorization using method-level checks like @PreAuthorize.) Tj ET
+BT /F1 10 Tf 60.00 168.89 Td (- Centralized error response format for consistent frontend handling.) Tj ET
+BT /F1 10 Tf 60.00 154.89 Td (- Circuit breakers and retries for Feign service-to-service calls.) Tj ET
+BT /F1 10 Tf 60.00 140.89 Td (- Docker secrets or environment vaulting instead of plain passwords.) Tj ET
+BT /F1 10 Tf 60.00 126.89 Td (- Separate databases per service to match true microservice ownership.) Tj ET
+BT /F1 10 Tf 60.00 112.89 Td (- RabbitMQ dead-letter queues for failed notification messages.) Tj ET
+BT /F1 10 Tf 60.00 98.89 Td (- Integration tests with Testcontainers for database, cache, queue, and service) Tj ET
+BT /F1 10 Tf 60.00 84.89 Td (  communication.) Tj ET
+endstream
+endobj
+xref
+0 17
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000154 00000 n 
+0000000224 00000 n 
+0000000299 00000 n 
+0000000441 00000 n 
+0000004549 00000 n 
+0000004691 00000 n 
+0000008282 00000 n 
+0000008425 00000 n 
+0000012635 00000 n 
+0000012779 00000 n 
+0000016859 00000 n 
+0000017003 00000 n 
+0000020741 00000 n 
+0000020885 00000 n 
+trailer
+<< /Size 17 /Root 1 0 R >>
+startxref
+26151
+%%EOF
